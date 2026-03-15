@@ -73,7 +73,11 @@
             "additionalProperties": false
           }
         },
-        "last_error": {"type": ["string", "null"]}
+        "last_error": {"type": ["string", "null"]},
+        "container_meta": {
+          "description": "Raw docker inspect or kubectl get pod output for the Redis container. Present only in docker/kubectl modes; null when unavailable or in direct mode.",
+          "type": ["object", "null"]
+        }
       },
       "additionalProperties": false
     },

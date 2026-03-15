@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Runner helpers for redis-stig-audit."""
 from dataclasses import dataclass, field
+import json
 import shlex
 import subprocess
 
@@ -101,7 +102,40 @@ class RedisRunner:
             data[k.strip()] = v.strip()
         return data
 
+    def container_inspect(self) -> dict:
+        """Return parsed `docker inspect` data for the configured container, or {}."""
+        if self.mode != "docker" or not self.container:
+            return {}
+        res = self.exec(["docker", "inspect", self.container])
+        if res.returncode != 0:
+            return {}
+        try:
+            data = json.loads(res.stdout)
+            return data[0] if isinstance(data, list) and data else {}
+        except (json.JSONDecodeError, IndexError):
+            return {}
+
+    def pod_inspect(self) -> dict:
+        """Return parsed `kubectl get pod -o json` data for the configured pod, or {}."""
+        if self.mode != "kubectl" or not self.pod:
+            return {}
+        res = self.exec(
+            ["kubectl", "get", "pod", "-n", self.namespace, self.pod, "-o", "json"]
+        )
+        if res.returncode != 0:
+            return {}
+        try:
+            return json.loads(res.stdout)
+        except json.JSONDecodeError:
+            return {}
+
     def snapshot(self) -> dict:
+        container_meta: dict | None = None
+        if self.mode == "docker":
+            container_meta = self.container_inspect() or None
+        elif self.mode == "kubectl":
+            container_meta = self.pod_inspect() or None
+
         return {
             "config": self.config_get(
                 "protected-mode",
@@ -126,4 +160,5 @@ class RedisRunner:
             "info_persistence": self.info("persistence"),
             "command_log_tail": self.command_log[-10:],
             "last_error": self.last_error,
+            "container_meta": container_meta,
         }
