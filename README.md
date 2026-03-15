@@ -13,7 +13,8 @@ This repository currently includes:
 - an initial machine-readable control matrix
 - methodology / assessor / evidence docs
 - a working first-pass audit CLI with real Redis interrogation via `redis-cli`
-- early runtime checks for authentication posture, ACL posture, protected mode, bind exposure, TLS visibility, persistence posture, and runtime metadata
+- benchmark-aligned checks for authentication posture, ACL posture, protected mode, bind exposure, TLS visibility, replication transport posture, persistence intent, persistence runtime health, logging intent, and runtime metadata
+- structured JSON output with target metadata, summary, evidence items, and runtime snapshot details
 
 It does **not** yet claim official CIS endorsement or certification.
 
@@ -28,19 +29,23 @@ It does **not** yet claim official CIS endorsement or certification.
 - `schemas/results.schema.json` — results schema draft
 - `docs/` — methodology, assessor guidance, and evidence model
 - `rego/` — future policy integration placeholders
-- `test/` — future fixture/test guidance
+- `test/` — smoke tests and future fixture guidance
 
 ## Current coverage
 
-First-pass automated checks currently focus on:
+Current automated checks focus on:
 - protected mode
 - bind exposure
 - TLS visibility
+- plaintext listener exposure when TLS is enabled
+- replication/cluster TLS posture visibility
 - default-user ACL posture
 - authenticated administrative access posture
 - dangerous-command exposure heuristics
-- persistence configuration visibility
+- persistence configuration intent
+- persistence runtime health visibility
 - ACL durability visibility
+- logging destination / intent visibility
 - runtime metadata / replication role visibility
 
 ## Usage
@@ -66,16 +71,31 @@ python3 audit.py --mode kubectl --pod redis-0 --namespace default --json results
 ## Output model
 
 Current JSON output includes:
-- target metadata
-- runtime snapshot
-- benchmark-aligned findings
+- `schema_version`
+- tool name/version metadata
+- normalized target metadata
+- executive summary (`status_counts`, `severity_counts`, `risk_posture`)
+- runtime snapshot (`CONFIG GET`, `ACL LIST`, `INFO` sections, command log tail, last error)
+- benchmark-aligned findings with evidence items and NIST/FedRAMP mappings
+
+The terminal report now includes:
+- executive summary
+- top findings section
+- sorted detailed findings with control mappings and evidence counts
 
 Planned outputs:
-- richer terminal reports
 - SARIF
 - control trace matrix
-- evidence summary
+- evidence summary bundle
 - optional enterprise output adapters
+
+## Validation
+
+Run the current smoke tests:
+
+```bash
+python3 -m unittest discover -s test -p 'test_*.py'
+```
 
 ## Design principles
 
@@ -88,7 +108,7 @@ Planned outputs:
 ## Near-term roadmap
 
 1. expand the benchmark draft into fuller control coverage
-2. add more Redis checks (replication, TLS detail, persistence and operational hardening)
-3. add test fixtures for Docker and Kubernetes
-4. add stronger output formats and evidence packaging
+2. add container-runtime and manifest-aware checks for non-root, privilege, mounts, and resource limits
+3. add Docker/Kubernetes fixture environments for repeatable live validation
+4. add SARIF and evidence-bundle outputs
 5. prepare for public review and GitHub release

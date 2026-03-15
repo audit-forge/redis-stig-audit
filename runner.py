@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Runner helpers for redis-stig-audit."""
-from dataclasses import dataclass
-import json
+from dataclasses import dataclass, field
 import shlex
 import subprocess
 
@@ -16,6 +15,8 @@ class RedisRunner:
     port: int = 6379
     password: str | None = None
     verbose: bool = False
+    last_error: str | None = None
+    command_log: list[dict] = field(default_factory=list)
 
     def _base_cli(self) -> list[str]:
         if self.mode == "direct":
@@ -42,7 +43,24 @@ class RedisRunner:
     def exec(self, command: list[str]) -> subprocess.CompletedProcess:
         if self.verbose:
             print("[runner]", shlex.join(command))
-        return subprocess.run(command, capture_output=True, text=True)
+        try:
+            res = subprocess.run(command, capture_output=True, text=True)
+        except FileNotFoundError as exc:
+            self.last_error = str(exc)
+            self.command_log.append(
+                {"command": shlex.join(command), "returncode": 127, "stdout": "", "stderr": str(exc)}
+            )
+            return subprocess.CompletedProcess(command, 127, "", str(exc))
+        self.last_error = res.stderr.strip() or None if res.returncode != 0 else None
+        self.command_log.append(
+            {
+                "command": shlex.join(command),
+                "returncode": res.returncode,
+                "stdout": res.stdout.strip(),
+                "stderr": res.stderr.strip(),
+            }
+        )
+        return res
 
     def redis_cli(self, *args: str) -> subprocess.CompletedProcess:
         return self.exec(self._base_cli() + list(args))
@@ -83,14 +101,29 @@ class RedisRunner:
             data[k.strip()] = v.strip()
         return data
 
-    def command_available(self, *args: str) -> bool:
-        res = self.redis_cli(*args)
-        return res.returncode == 0
-
     def snapshot(self) -> dict:
         return {
-            "config": self.config_get("protected-mode", "bind", "port", "tls-port", "tls-replication", "tls-cluster"),
+            "config": self.config_get(
+                "protected-mode",
+                "bind",
+                "port",
+                "tls-port",
+                "tls-replication",
+                "tls-cluster",
+                "appendonly",
+                "appenddirname",
+                "save",
+                "dir",
+                "dbfilename",
+                "aclfile",
+                "loglevel",
+                "logfile",
+                "syslog-enabled",
+            ),
             "acl_list": self.acl_list(),
             "info_server": self.info("server"),
             "info_replication": self.info("replication"),
+            "info_persistence": self.info("persistence"),
+            "command_log_tail": self.command_log[-10:],
+            "last_error": self.last_error,
         }

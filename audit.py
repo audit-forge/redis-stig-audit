@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import sys
+from collections import Counter
 from datetime import datetime, timezone
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -11,6 +12,9 @@ sys.path.insert(0, os.path.dirname(__file__))
 from runner import RedisRunner
 from checks import ALL_CHECKERS
 from output import report
+
+TOOL_VERSION = "0.3.0-draft"
+SCHEMA_VERSION = "2026-03-14"
 
 
 def parse_args():
@@ -28,8 +32,42 @@ def parse_args():
     return p.parse_args()
 
 
+def build_target_info(args, runner, timestamp: str) -> dict:
+    return {
+        "mode": args.mode,
+        "namespace": args.namespace if args.mode == "kubectl" else None,
+        "container": args.container,
+        "pod": args.pod,
+        "host": args.host if args.mode == "direct" else None,
+        "port": args.port if args.mode == "direct" else None,
+        "display_name": args.container or args.pod or f"{args.host}:{args.port}",
+        "timestamp": timestamp,
+        "connected": runner.test_connection(),
+        "last_error": runner.last_error,
+    }
+
+
+def summarize(results) -> dict:
+    status_counts = Counter(r.status.value for r in results)
+    severity_counts = Counter(r.severity.value for r in results)
+    actionable = sum(status_counts.get(k, 0) for k in ("FAIL", "WARN", "ERROR"))
+    if status_counts.get("FAIL", 0) or status_counts.get("ERROR", 0):
+        risk_posture = "HIGH RISK"
+    elif status_counts.get("WARN", 0):
+        risk_posture = "REVIEW REQUIRED"
+    else:
+        risk_posture = "BASELINE ACCEPTABLE"
+    return {
+        "status_counts": dict(status_counts),
+        "severity_counts": dict(severity_counts),
+        "actionable_findings": actionable,
+        "risk_posture": risk_posture,
+    }
+
+
 def main():
     args = parse_args()
+    timestamp = datetime.now(timezone.utc).isoformat()
     runner = RedisRunner(
         mode=args.mode,
         container=args.container,
@@ -45,27 +83,27 @@ def main():
     for checker_cls in ALL_CHECKERS:
         results.extend(checker_cls(runner).run())
 
-    target_info = {
-        "Mode": args.mode,
-        "Target": args.container or args.pod or f"{args.host}:{args.port}",
-        "Timestamp": datetime.now(timezone.utc).isoformat(),
-        "Connected": runner.test_connection(),
-    }
+    results = sorted(results, key=lambda r: (r.status.value, r.severity.value, r.check_id))
+    target_info = build_target_info(args, runner, timestamp)
+    summary = summarize(results)
 
     if not args.quiet:
-        report.render(results, target_info)
+        report.render(results, target_info, summary)
 
     if args.json:
+        document = {
+            "schema_version": SCHEMA_VERSION,
+            "tool": {
+                "name": "redis-stig-audit",
+                "version": TOOL_VERSION,
+            },
+            "target": target_info,
+            "summary": summary,
+            "snapshot": runner.snapshot(),
+            "results": [r.to_dict() for r in results],
+        }
         with open(args.json, "w") as f:
-            json.dump(
-                {
-                    "target": target_info,
-                    "snapshot": runner.snapshot(),
-                    "results": [r.to_dict() for r in results],
-                },
-                f,
-                indent=2,
-            )
+            json.dump(document, f, indent=2)
         print(f"[json] Written to {args.json}")
 
 

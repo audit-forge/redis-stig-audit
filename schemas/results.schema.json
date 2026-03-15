@@ -2,33 +2,141 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "redis-stig-audit results",
   "type": "object",
-  "required": ["target", "results"],
+  "required": ["schema_version", "tool", "target", "summary", "snapshot", "results"],
   "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "tool": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": {"type": "string"},
+        "version": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
     "target": {
-      "type": "object"
+      "type": "object",
+      "required": ["mode", "display_name", "timestamp", "connected"],
+      "properties": {
+        "mode": {"type": "string", "enum": ["docker", "kubectl", "direct"]},
+        "namespace": {"type": ["string", "null"]},
+        "container": {"type": ["string", "null"]},
+        "pod": {"type": ["string", "null"]},
+        "host": {"type": ["string", "null"]},
+        "port": {"type": ["integer", "null"]},
+        "display_name": {"type": "string"},
+        "timestamp": {"type": "string"},
+        "connected": {"type": "boolean"},
+        "last_error": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": ["status_counts", "severity_counts", "actionable_findings", "risk_posture"],
+      "properties": {
+        "status_counts": {
+          "type": "object",
+          "additionalProperties": {"type": "integer"}
+        },
+        "severity_counts": {
+          "type": "object",
+          "additionalProperties": {"type": "integer"}
+        },
+        "actionable_findings": {"type": "integer"},
+        "risk_posture": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "snapshot": {
+      "type": "object",
+      "required": ["config", "acl_list", "info_server", "info_replication", "info_persistence", "command_log_tail", "last_error"],
+      "properties": {
+        "config": {"type": "object", "additionalProperties": {"type": "string"}},
+        "acl_list": {"type": "array", "items": {"type": "string"}},
+        "info_server": {"type": "object", "additionalProperties": {"type": "string"}},
+        "info_replication": {"type": "object", "additionalProperties": {"type": "string"}},
+        "info_persistence": {"type": "object", "additionalProperties": {"type": "string"}},
+        "command_log_tail": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["command", "returncode", "stdout", "stderr"],
+            "properties": {
+              "command": {"type": "string"},
+              "returncode": {"type": "integer"},
+              "stdout": {"type": "string"},
+              "stderr": {"type": "string"}
+            },
+            "additionalProperties": false
+          }
+        },
+        "last_error": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
     },
     "results": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["check_id", "title", "status", "severity"],
+        "required": [
+          "check_id",
+          "title",
+          "status",
+          "severity",
+          "description",
+          "actual",
+          "expected",
+          "remediation",
+          "references",
+          "category",
+          "evidence_type",
+          "evidence",
+          "nist_800_53_controls",
+          "rationale"
+        ],
         "properties": {
           "check_id": {"type": "string"},
           "benchmark_control_id": {"type": ["string", "null"]},
+          "cis_id": {"type": ["string", "null"]},
           "title": {"type": "string"},
-          "status": {"type": "string"},
-          "severity": {"type": "string"},
+          "status": {"type": "string", "enum": ["PASS", "FAIL", "WARN", "SKIP", "ERROR"]},
+          "severity": {"type": "string", "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"]},
+          "fedramp_control": {"type": ["string", "null"]},
+          "nist_800_53_controls": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
           "category": {"type": "string"},
           "description": {"type": "string"},
+          "rationale": {"type": "string"},
           "actual": {"type": "string"},
           "expected": {"type": "string"},
           "remediation": {"type": "string"},
           "references": {
             "type": "array",
             "items": {"type": "string"}
+          },
+          "evidence_type": {"type": "string"},
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["source", "value"],
+              "properties": {
+                "source": {"type": "string"},
+                "value": {},
+                "command": {"type": "string"}
+              },
+              "additionalProperties": false
+            }
           }
-        }
+        },
+        "additionalProperties": false
       }
     }
-  }
+  },
+  "additionalProperties": false
 }

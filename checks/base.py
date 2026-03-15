@@ -28,6 +28,7 @@ class CheckResult:
     benchmark_control_id: Optional[str] = None
     cis_id: Optional[str] = None
     fedramp_control: Optional[str] = None
+    nist_800_53_controls: list[str] = field(default_factory=list)
     description: str = ""
     actual: str = ""
     expected: str = ""
@@ -35,6 +36,8 @@ class CheckResult:
     references: list[str] = field(default_factory=list)
     category: str = ""
     evidence_type: str = "runtime-config"
+    evidence: list[dict] = field(default_factory=list)
+    rationale: str = ""
 
     def to_dict(self):
         return {
@@ -45,13 +48,16 @@ class CheckResult:
             "benchmark_control_id": self.benchmark_control_id,
             "cis_id": self.cis_id,
             "fedramp_control": self.fedramp_control,
+            "nist_800_53_controls": self.nist_800_53_controls,
             "description": self.description,
+            "rationale": self.rationale,
             "actual": self.actual,
             "expected": self.expected,
             "remediation": self.remediation,
             "references": self.references,
             "category": self.category,
             "evidence_type": self.evidence_type,
+            "evidence": self.evidence,
         }
 
 
@@ -61,3 +67,9 @@ class BaseChecker:
 
     def run(self) -> list[CheckResult]:
         raise NotImplementedError
+
+    def evidence(self, source: str, value, command: str | None = None) -> dict:
+        item = {"source": source, "value": value}
+        if command:
+            item["command"] = command
+        return item
