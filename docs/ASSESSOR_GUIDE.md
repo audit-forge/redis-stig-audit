@@ -32,4 +32,4 @@ For each finding, preserve:
 
 ## Current Limitation
 
-The current project is still in early scaffold stage. Until more checks are implemented, results should be treated as developmental and not as a final security assessment.
+The project is now a functional prototype rather than a bare scaffold, but it is still not a final benchmark release. Treat results as credible working assessment output that still needs reviewer judgment, especially for manual-review controls and future Wiz/policy integrations.

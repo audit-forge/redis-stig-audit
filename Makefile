@@ -19,9 +19,9 @@ all-outputs:
 		--bundle output/audit-bundle.zip
 
 test:
-	$(PYTHON) -m pytest test/ -v
+	$(PYTHON) -m unittest discover -s test -p 'test_*.py' -v
 
 test-unittest:
-	$(PYTHON) -m unittest discover -s test -v
+	$(PYTHON) -m unittest discover -s test -p 'test_*.py' -v
 
 .PHONY: run json sarif bundle all-outputs test test-unittest

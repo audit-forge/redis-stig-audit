@@ -140,11 +140,16 @@ make all-outputs
 
 ## Validation
 
-Run the current smoke tests:
+Run the current test suite:
 
 ```bash
-python3 -m unittest discover -s test -p 'test_*.py'
+python3 -m unittest discover -s test -p 'test_*.py' -v
 ```
+
+## Operator docs
+
+- Standalone benchmark execution: `docs/RUN_BENCHMARK.md`
+- Wiz workflow / integration notes: `docs/WIZ_SETUP.md`
 
 ## Design principles
 
