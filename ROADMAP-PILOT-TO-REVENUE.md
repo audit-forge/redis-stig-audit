@@ -1,7 +1,7 @@
 # redis-stig-audit — Pilot-to-Revenue Roadmap (Draft / Saved for Later)
 
 Status: parked-draft
-Owner: Keith
+Owner: TBD
 
 ## Goal
 Turn Redis container audit content into a pilot-ready assessment tool for regulated environments that need recurring Redis security evidence.
