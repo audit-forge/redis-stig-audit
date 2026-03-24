@@ -36,7 +36,7 @@ Open-source security audit tool for Redis deployed in containerized environments
 ```bash
 git clone https://github.com/audit-forge/redis-stig-audit.git
 cd redis-stig-audit
-python audit.py --version
+python3 audit.py --version
 ```
 
 No third-party dependencies — uses Python standard library only.
@@ -47,16 +47,16 @@ No third-party dependencies — uses Python standard library only.
 
 ```bash
 # Audit a Docker container
-python audit.py --mode docker --container redis
+python3 audit.py --mode docker --container redis
 
 # Audit a Kubernetes pod
-python audit.py --mode kubectl --pod redis-0 --namespace default
+python3 audit.py --mode kubectl --pod redis-0 --namespace default
 
 # Audit via direct TCP
-python audit.py --mode direct --host 127.0.0.1 --port 6379
+python3 audit.py --mode direct --host 127.0.0.1 --port 6379
 
 # Full output: JSON + SARIF + evidence bundle
-python audit.py --mode docker --container redis \
+python3 audit.py --mode docker --container redis \
   --json results.json \
   --sarif results.sarif \
   --bundle audit-bundle.zip
@@ -115,13 +115,13 @@ The audit tool queries the NIST National Vulnerability Database (NVD) for CVEs a
 
 ```bash
 # Standard run (includes CVE scan)
-python audit.py --mode docker --container redis --csv results.csv
+python3 audit.py --mode docker --container redis --csv results.csv
 
 # Skip CVE scan
-python audit.py --mode docker --container redis --skip-cve
+python3 audit.py --mode docker --container redis --skip-cve
 
 # With NVD API key
-NVD_API_KEY=your-key python audit.py --mode docker --container redis
+NVD_API_KEY=your-key python3 audit.py --mode docker --container redis
 ```
 
 See [docs/CVE_SCANNING.md](docs/CVE_SCANNING.md) for full details.
@@ -211,10 +211,10 @@ The complete matrices are in `mappings/CMMC-compliance-matrix.csv` and `mappings
 Target:   docker → redis
 Version:  Redis 7.2.4
 
-Total Controls:     25
-✅ Passed:          18
-❌ Failed:           5
-⚠️  Warnings:         2
+Total Controls:     <varies by benchmark/runtime support>
+✅ Passed:          <example>
+❌ Failed:          <example>
+⚠️  Warnings:       <example>
 
 Top Findings (by severity):
   🔴 CRITICAL: RD-AUTH-001 — Default user has nopass (no authentication required)
@@ -233,13 +233,13 @@ Full findings document including:
 Schema: `schemas/results.schema.json` (JSON Schema draft 2020-12)
 
 ```bash
-python audit.py --mode docker --container redis --json results.json
+python3 audit.py --mode docker --container redis --json results.json
 ```
 
 ### SARIF 2.1.0 (GitHub Security, GitLab SAST)
 
 ```bash
-python audit.py --mode docker --container redis --sarif results.sarif
+python3 audit.py --mode docker --container redis --sarif results.sarif
 ```
 
 Upload to GitHub Code Scanning:
@@ -260,7 +260,7 @@ Upload to GitHub Code Scanning:
 ### CSV (framework compliance export)
 
 ```bash
-python audit.py --mode docker --container redis --csv results.csv
+python3 audit.py --mode docker --container redis --csv results.csv
 ```
 
 Columns: `Control_ID`, `Title`, `Severity`, `Result`, `Category`, `Actual`, `Expected`, `Description`, `Rationale`, `CIS_Control`, `NIST_800_53`, `NIST_800_171`, `CMMC_Level`, `MITRE_ATTACK`, `MITRE_D3FEND`, `Remediation`, `References`
@@ -268,7 +268,7 @@ Columns: `Control_ID`, `Title`, `Severity`, `Result`, `Category`, `Actual`, `Exp
 ### Evidence Bundle (compliance audits)
 
 ```bash
-python audit.py --mode docker --container redis --bundle audit-bundle.zip
+python3 audit.py --mode docker --container redis --bundle audit-bundle.zip
 ```
 
 Bundle contents:
@@ -285,7 +285,7 @@ Bundle contents:
 ### Combined output
 
 ```bash
-python audit.py --mode docker --container redis \
+python3 audit.py --mode docker --container redis \
   --json output/results.json \
   --sarif output/results.sarif \
   --csv output/results.csv \
@@ -315,7 +315,7 @@ jobs:
 
       - name: Run redis-stig-audit
         run: |
-          python audit.py --mode docker --container test-redis \
+          python3 audit.py --mode docker --container test-redis \
             --sarif results.sarif \
             --fail-on high
 
@@ -335,7 +335,7 @@ redis_audit:
   services:
     - redis:7
   script:
-    - python audit.py --mode direct --host redis --sarif gl-sast-report.sarif
+    - python3 audit.py --mode direct --host redis --sarif gl-sast-report.sarif
   artifacts:
     reports:
       sast: gl-sast-report.sarif
@@ -346,7 +346,7 @@ redis_audit:
 ## Running Tests
 
 ```bash
-python -m pytest test/ -v
+python3 -m pytest test/ -v
 ```
 
 The test suite uses a `FakeRunner` mock — no live Redis instance required for unit tests.

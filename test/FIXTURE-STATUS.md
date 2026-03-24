@@ -19,11 +19,12 @@ Expected use:
 3. Compare output artifacts under `output/fixtures/`
 4. Tear fixtures down
 
-Current observed outcomes from live validation on 2026-03-21:
+Current observed outcomes from live validation on 2026-03-24:
 - `baseline` → `PASS 9 / FAIL 6 / WARN 5`
 - `vulnerable` → `PASS 7 / FAIL 7 / WARN 6`
-- `hardened` → `PASS 18 / WARN 2`
+- `hardened` → `PASS 18 / FAIL 0 / WARN 2`
 
 Notes:
 - The hardened fixture is intentionally much stronger, but still leaves TLS-related controls in warning state because TLS is not enabled in the lightweight fixture.
+- On 2026-03-24, live validation also confirmed and fixed a harness bug in `test/run_fixtures.sh`: readiness checks for the hardened fixture were using the wrong `redis-cli` authentication flag.
 - This fixture set is designed to prove repeatability and expected differences between security postures, not to claim full production deployment coverage.

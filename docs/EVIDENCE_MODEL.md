@@ -4,6 +4,8 @@
 
 Produce outputs that can support recurring assessment workflows, including annual security reviews in regulated environments.
 
+This evidence model is built with certification-readiness in mind and is intended to support future certification-oriented review, while making no claim of CIS certification or endorsement.
+
 ## Current Result Document Structure
 
 Each JSON result document now includes:

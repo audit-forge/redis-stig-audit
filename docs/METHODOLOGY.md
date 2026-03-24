@@ -4,6 +4,8 @@
 
 This project is designed to support a future Redis-in-containers security benchmark and corresponding audit workflow for regulated environments.
 
+It is not certified or endorsed by CIS. It is designed to support future certification-oriented review, built with certification-readiness in mind, and structured to align with CIS Benchmark implementation, testing, and evidence expectations.
+
 The benchmark artifact is primary.
 The scanner exists to provide deterministic evidence against benchmark controls.
 

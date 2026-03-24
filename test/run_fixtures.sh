@@ -37,7 +37,14 @@ fixture_container() {
   esac
 }
 
-fixture_password_args() {
+fixture_wait_args() {
+  case "$1" in
+    hardened) echo -a Str0ngRedisPass!2026 ;;
+    *) echo ;;
+  esac
+}
+
+fixture_audit_args() {
   case "$1" in
     hardened) echo --password Str0ngRedisPass!2026 ;;
     *) echo ;;
@@ -99,7 +106,7 @@ wait_for_fixture() {
   container="$(fixture_container "$fixture")"
   echo "[wait] waiting for $container"
   for _ in $(seq 1 30); do
-    if docker exec "$container" redis-cli $(fixture_password_args "$fixture") PING >/dev/null 2>&1; then
+    if docker exec "$container" redis-cli $(fixture_wait_args "$fixture") PING >/dev/null 2>&1; then
       return 0
     fi
     sleep 1
@@ -120,7 +127,7 @@ audit_fixture() {
   "$PYTHON_BIN" "$ROOT/audit.py" \
     --mode docker \
     --container "$container" \
-    $(fixture_password_args "$fixture") \
+    $(fixture_audit_args "$fixture") \
     --skip-cve \
     --json "$outbase.json" \
     --sarif "$outbase.sarif" \
