@@ -12,7 +12,9 @@ Open-source security audit tool for Redis deployed in containerized environments
 - **NIST SP 800-53 Revision 5** (FedRAMP High)
 - **NIST SP 800-171 Rev 2** / **CMMC 2.0**
 
-> **Disclaimer:** This is an independent tool. Not officially certified or endorsed by CIS, DISA, or NIST. The CIS Redis Container Benchmark is a community draft. See [DISCLAIMER.md](DISCLAIMER.md) for full legal attribution.
+This repository is currently positioned as a **validated v1.0 community-draft benchmark + runtime audit prototype**. The v1.0 release boundary is frozen in [`docs/V1_RELEASE_BOUNDARY.md`](docs/V1_RELEASE_BOUNDARY.md).
+
+> **Disclaimer:** This is an independent tool. Not officially certified or endorsed by CIS, DISA, NIST, Redis Ltd., or any other standards body/vendor. The CIS Redis Container Benchmark in this repo is a community draft. See [DISCLAIMER.md](DISCLAIMER.md) for attribution and positioning details.
 
 ---
 
@@ -130,10 +132,15 @@ See [docs/CVE_SCANNING.md](docs/CVE_SCANNING.md) for full details.
 
 ## Repeatable Live Validation
 
-The repo now includes a simple Docker-based fixture set for repeatable manual validation:
+The repo includes a Docker-based fixture set for repeatable live validation:
 - `baseline`
 - `vulnerable`
 - `hardened`
+
+**Validated fixture outcomes for the current v1.0 baseline:**
+- `baseline` → `PASS 9 / FAIL 6 / WARN 5`
+- `vulnerable` → `PASS 7 / FAIL 7 / WARN 6`
+- `hardened` → `PASS 18 / FAIL 0 / WARN 2`
 
 Quick start:
 
@@ -144,7 +151,7 @@ make fixtures-down
 ```
 
 Per-fixture artifacts are written to `output/fixtures/`.
-See [test/README.md](test/README.md) for the full workflow.
+See [test/README.md](test/README.md) for the full workflow, [test/FIXTURE-STATUS.md](test/FIXTURE-STATUS.md) for observed outcomes, and [docs/V1_RELEASE_BOUNDARY.md](docs/V1_RELEASE_BOUNDARY.md) for what counts as done for v1.0.
 
 ---
 
@@ -353,14 +360,17 @@ The test suite uses a `FakeRunner` mock — no live Redis instance required for 
 
 ---
 
-## Tested Environments
+## Validation Status
 
-| Category | Tested |
+| Category | Current evidence |
 |---|---|
-| Redis Versions | 6.x, 7.0, 7.2 |
-| Container Runtimes | Docker, Kubernetes (GKE, EKS, AKS) |
-| Cloud Providers | AWS ElastiCache, GCP Memorystore (via direct mode) |
-| Operating Systems | Linux (Ubuntu, Alpine), macOS |
+| Unit tests | `make test` |
+| Live runtime validation | Docker fixture set via `make fixture-audit-all` |
+| Fixture targets | `baseline`, `vulnerable`, `hardened` |
+| Redis image used for fixtures | `redis:7.2-alpine` |
+| Operator host used for current validation | macOS running Docker |
+
+The tool supports Docker, Kubernetes, and direct modes, but the currently recorded v1.0 validation evidence is centered on the repeatable Docker fixture workflow above. Kubernetes, managed-service, and broader topology coverage remain intentionally conservative for v1.0 positioning.
 
 ---
 
@@ -393,9 +403,11 @@ redis-stig-audit/
 
 - [docs/CVE_SCANNING.md](docs/CVE_SCANNING.md) — CVE/KEV scanning details
 - [docs/RUN_BENCHMARK.md](docs/RUN_BENCHMARK.md) — Benchmark execution guide
+- [docs/V1_RELEASE_BOUNDARY.md](docs/V1_RELEASE_BOUNDARY.md) — frozen v1.0 scope, validated baseline, and v1.1+ backlog
 - [docs/ASSESSOR_GUIDE.md](docs/ASSESSOR_GUIDE.md) — Assessor workflow guide
 - [docs/METHODOLOGY.md](docs/METHODOLOGY.md) — Assessment methodology
 - [docs/EVIDENCE_MODEL.md](docs/EVIDENCE_MODEL.md) — Evidence collection model
+- [test/FIXTURE-STATUS.md](test/FIXTURE-STATUS.md) — observed live fixture outcomes
 - [CONTRIBUTING.md](CONTRIBUTING.md) — How to contribute
 
 ---

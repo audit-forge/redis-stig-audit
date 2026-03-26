@@ -32,6 +32,8 @@ bash test/run_fixtures.sh down
 
 Artifacts are written to `output/fixtures/`.
 
+Current validated outcomes are recorded in `test/FIXTURE-STATUS.md` and summarized in `docs/V1_RELEASE_BOUNDARY.md`.
+
 ## Expected validation themes
 - auth enabled vs disabled
 - protected mode on vs off
