@@ -47,6 +47,10 @@ No third-party dependencies — uses Python standard library only.
 
 ## Quick Start
 
+Fastest docs first:
+- [docs/QUICKSTART.md](docs/QUICKSTART.md) — copy/paste commands
+- [docs/MIDDLE_SCHOOL_GUIDE.md](docs/MIDDLE_SCHOOL_GUIDE.md) — plain-English walkthrough
+
 ```bash
 # Audit a Docker container
 python3 audit.py --mode docker --container redis
@@ -401,8 +405,12 @@ redis-stig-audit/
 
 ## Documentation
 
+- [docs/QUICKSTART.md](docs/QUICKSTART.md) — copy/paste quick start for the fastest path
+- [docs/MIDDLE_SCHOOL_GUIDE.md](docs/MIDDLE_SCHOOL_GUIDE.md) — ultra-simple step-by-step usage guide
+- [docs/RUN_BENCHMARK.md](docs/RUN_BENCHMARK.md) — fuller benchmark execution guide
+- [docs/PILOT_TESTER_HANDOFF.md](docs/PILOT_TESTER_HANDOFF.md) — reusable pilot tester message
+- [docs/RELEASE_SUMMARY.md](docs/RELEASE_SUMMARY.md) — short release-style summary
 - [docs/CVE_SCANNING.md](docs/CVE_SCANNING.md) — CVE/KEV scanning details
-- [docs/RUN_BENCHMARK.md](docs/RUN_BENCHMARK.md) — Benchmark execution guide
 - [docs/V1_RELEASE_BOUNDARY.md](docs/V1_RELEASE_BOUNDARY.md) — frozen v1.0 scope, validated baseline, and v1.1+ backlog
 - [docs/ASSESSOR_GUIDE.md](docs/ASSESSOR_GUIDE.md) — Assessor workflow guide
 - [docs/METHODOLOGY.md](docs/METHODOLOGY.md) — Assessment methodology
