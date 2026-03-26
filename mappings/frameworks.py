@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 Framework mapping data for redis-stig-audit.
 

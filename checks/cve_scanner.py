@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """CVE/KEV vulnerability scanning module for redis-stig-audit.
 
 Fetches CVE data from NVD API v2 and CISA KEV catalog, caches results

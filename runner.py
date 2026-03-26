@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 """Runner helpers for redis-stig-audit."""
 from dataclasses import dataclass, field
 import json

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """SARIF 2.1.0 output for redis-stig-audit.
 
 Maps audit CheckResult objects to a SARIF run document suitable for

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Container-level security checks for Redis (docker/kubectl modes only).
 
 These checks assess controls that are set *outside* Redis — in the container
