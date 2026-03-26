@@ -50,6 +50,6 @@ Please focus feedback on:
 ## Useful docs for testers
 
 - `docs/QUICKSTART.md`
-- `docs/MIDDLE_SCHOOL_GUIDE.md`
+- `docs/BEGINNER_GUIDE.md`
 - `docs/RUN_BENCHMARK.md`
 - `docs/V1_RELEASE_BOUNDARY.md`

@@ -49,7 +49,7 @@ No third-party dependencies — uses Python standard library only.
 
 Fastest docs first:
 - [docs/QUICKSTART.md](docs/QUICKSTART.md) — copy/paste commands
-- [docs/MIDDLE_SCHOOL_GUIDE.md](docs/MIDDLE_SCHOOL_GUIDE.md) — plain-English walkthrough
+- [docs/BEGINNER_GUIDE.md](docs/BEGINNER_GUIDE.md) — plain-English walkthrough
 
 ```bash
 # Audit a Docker container
@@ -406,7 +406,7 @@ redis-stig-audit/
 ## Documentation
 
 - [docs/QUICKSTART.md](docs/QUICKSTART.md) — copy/paste quick start for the fastest path
-- [docs/MIDDLE_SCHOOL_GUIDE.md](docs/MIDDLE_SCHOOL_GUIDE.md) — ultra-simple step-by-step usage guide
+- [docs/BEGINNER_GUIDE.md](docs/BEGINNER_GUIDE.md) — plain-English step-by-step usage guide
 - [docs/RUN_BENCHMARK.md](docs/RUN_BENCHMARK.md) — fuller benchmark execution guide
 - [docs/PILOT_TESTER_HANDOFF.md](docs/PILOT_TESTER_HANDOFF.md) — reusable pilot tester message
 - [docs/RELEASE_SUMMARY.md](docs/RELEASE_SUMMARY.md) — short release-style summary
@@ -444,3 +444,4 @@ Built with reference to:
 - NIST SP 800-171 Rev 2
 - CISA Known Exploited Vulnerabilities Catalog
 - Redis Security Documentation
+

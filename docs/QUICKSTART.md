@@ -227,7 +227,7 @@ You pick the mode, point it at Redis, and read the report.
 
 ## Where to go next
 
-- `docs/MIDDLE_SCHOOL_GUIDE.md` — ultra-simple step-by-step instructions
+- `docs/BEGINNER_GUIDE.md` — plain-English step-by-step instructions
 - `docs/RUN_BENCHMARK.md` — fuller operator guide
 - `test/README.md` — fixture testing flow
 - `docs/V1_RELEASE_BOUNDARY.md` — current v1.0 scope and positioning
