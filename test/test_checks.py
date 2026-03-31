@@ -605,5 +605,61 @@ class BundleOutputTests(unittest.TestCase):
             self.assertIn("snapshot.json", names)
 
 
+# ---------------------------------------------------------------------------
+# CLI flag tests: --version and --fail-on
+# ---------------------------------------------------------------------------
+
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+class CliVersionFlagTests(unittest.TestCase):
+    def test_version_flag_prints_tool_name_and_version(self):
+        proc = subprocess.run(
+            ["python3", "audit.py", "--version"],
+            cwd=_REPO_ROOT,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(0, proc.returncode)
+        self.assertIn("redis-stig-audit", proc.stdout)
+        # version string must look like semver-ish, e.g. "0.3.0-draft"
+        import re
+        self.assertRegex(proc.stdout, r"\d+\.\d+\.\d+")
+
+
+class CliFailOnFlagTests(unittest.TestCase):
+    """Tests for --fail-on SEVERITY exit-code behavior."""
+
+    _BASE_CMD = [
+        "python3", "audit.py",
+        "--mode", "direct",
+        "--host", "127.0.0.1", "--port", "6399",
+        "--skip-cve", "--quiet",
+    ]
+
+    def _run(self, *extra_args):
+        proc = subprocess.run(
+            self._BASE_CMD + list(extra_args),
+            cwd=_REPO_ROOT,
+            capture_output=True,
+            text=True,
+        )
+        return proc
+
+    def test_fail_on_critical_exits_nonzero_when_critical_errors_present(self):
+        # Connecting to unreachable Redis yields CRITICAL ERROR results
+        proc = self._run("--fail-on", "critical")
+        self.assertEqual(1, proc.returncode, msg=proc.stderr)
+
+    def test_fail_on_low_exits_nonzero_when_any_fail_or_error(self):
+        proc = self._run("--fail-on", "low")
+        self.assertEqual(1, proc.returncode, msg=proc.stderr)
+
+    def test_no_fail_on_flag_always_exits_zero_on_connection_failure(self):
+        # Without --fail-on the CLI should exit 0 regardless of findings
+        proc = self._run()
+        self.assertEqual(0, proc.returncode, msg=proc.stderr)
+
+
 if __name__ == "__main__":
     unittest.main()

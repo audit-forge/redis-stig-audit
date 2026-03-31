@@ -22,8 +22,12 @@ TOOL_VERSION = "0.3.0-draft"
 SCHEMA_VERSION = "2026-03-14"
 
 
+_SEVERITY_ORDER = ["critical", "high", "medium", "low", "info"]
+
+
 def parse_args():
     p = argparse.ArgumentParser(description="Draft Redis CIS-style container audit")
+    p.add_argument("--version", action="version", version=f"redis-stig-audit {TOOL_VERSION}")
     p.add_argument("--mode", choices=["docker", "kubectl", "direct"], default="docker")
     p.add_argument("--container")
     p.add_argument("--pod")
@@ -38,6 +42,12 @@ def parse_args():
     p.add_argument("--quiet", action="store_true")
     p.add_argument("--verbose", action="store_true")
     p.add_argument("--skip-cve", action="store_true", help="Skip CVE/KEV vulnerability scan (faster, compliance-only)")
+    p.add_argument(
+        "--fail-on",
+        metavar="SEVERITY",
+        choices=_SEVERITY_ORDER,
+        help="Exit non-zero if any FAIL/ERROR finding is at or above this severity (e.g. --fail-on high)",
+    )
     return p.parse_args()
 
 
@@ -242,6 +252,15 @@ def main():
     if args.csv:
         write_csv(args.csv, results, target_info, cve_scanned=not args.skip_cve)
         print(f"[csv]    Written to {args.csv}")
+
+    if args.fail_on:
+        threshold_idx = _SEVERITY_ORDER.index(args.fail_on)
+        actionable_statuses = {"FAIL", "ERROR"}
+        for r in results:
+            if r.status.value in actionable_statuses:
+                sev_idx = _SEVERITY_ORDER.index(r.severity.value.lower())
+                if sev_idx <= threshold_idx:
+                    sys.exit(1)
 
 
 if __name__ == "__main__":
